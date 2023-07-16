@@ -167,16 +167,22 @@ leadTime : Model -> Float
 leadTime model =
     model.done
         |> List.map .size
+        |> mean
+        |> (+) 1
+        |> roundAt { place = 2 }
+
+
+mean : List Int -> Float
+mean list =
+    list
         |> List.sum
         |> toFloat
-        |> divfBy (List.length model.done |> toFloat)
-        |> (+) 1
-        |> round2Place
+        |> divfBy (List.length list |> toFloat)
 
 
-round2Place : Float -> Float
-round2Place a =
-    a * 100 |> round |> toFloat |> divfBy 100
+roundAt : { place : Int } -> Float -> Float
+roundAt { place } a =
+    a * (10 ^ place |> toFloat) |> round |> toFloat |> divfBy (10 ^ place |> toFloat)
 
 
 divfBy : Float -> Float -> Float
