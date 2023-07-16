@@ -111,7 +111,7 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "PR RPG"
+    { title = "Dev Team Sim"
     , body =
         [ Html.main_ []
             [ Html.div [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Todo" ] :: (model.todo |> List.map viewTask))
@@ -141,7 +141,7 @@ viewCharacter model =
     Html.div [ Html.Attributes.class "character" ]
         [ Html.img
             [ Html.Attributes.classList [ ( "working", model.current /= Nothing ) ]
-            , Html.Attributes.src "/img/characters/char_26.png"
+            , Html.Attributes.src "[VITE_PLUGIN_ELM_ASSET:/static/img/characters/char_26.png]"
             ]
             []
         , case model.current of
