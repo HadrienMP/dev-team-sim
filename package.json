@@ -1,0 +1,21 @@
+{
+  "name": "dev-team-sim",
+  "version": "1.0.0",
+  "source": "index.html",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "elm-tooling install",
+    "test": "elm-test-rs",
+    "start": "parcel index.html"
+  },
+  "dependencies": {
+    "elm-tooling": "^1.14.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-elm": "2.9.3",
+    "@parcel/transformer-sass": "2.9.3",
+    "elm": "^0.19.1-5",
+    "parcel": "^2.9.3",
+    "parcel-reporter-static-files-copy": "^1.5.0"
+  }
+}
