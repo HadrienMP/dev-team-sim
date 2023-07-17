@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Dict exposing (update)
-import Html
+import Html exposing (label)
 import Html.Attributes
 import Platform exposing (Task)
 import Platform.Cmd as Cmd
@@ -119,20 +119,22 @@ view model =
             , Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Done" ] :: (model.done |> List.map viewTask))
             , Html.section [ Html.Attributes.id "statistics" ]
                 [ Html.h2 [] [ Html.text "Statistics" ]
-                , Html.dl []
-                    [ Html.dt [] [ Html.text "WIP" ]
-                    , Html.dd [] [ Html.text "1" ]
-                    , Html.dt [] [ Html.text "Throughput" ]
-                    , Html.dd [] [ leadTime model |> String.fromFloat |> Html.text ]
-                    , Html.dt [] [ Html.text "Lead Time" ]
-                    , Html.dd [] [ Html.text <| String.fromFloat <| leadTime model ]
-                    , Html.dt [] [ Html.text "Cost" ]
-                    , Html.dd [] [ Html.text "50$ / point" ]
-                    ]
+                , viewMetric { label = "WIP", value = "1" }
+                , viewMetric { label = "Throughput", value = leadTime model |> String.fromFloat }
+                , viewMetric { label = "Lead Time", value = leadTime model |> String.fromFloat }
+                , viewMetric { label = "Cost", value = "50$ / point" }
                 ]
             ]
         ]
     }
+
+
+viewMetric : { label : String, value : String } -> Html.Html Msg
+viewMetric { label, value } =
+    Html.div [ Html.Attributes.class "metric" ]
+        [ Html.span [ Html.Attributes.class "label" ] [ Html.text label ]
+        , Html.span [ Html.Attributes.class "value" ] [ Html.text value ]
+        ]
 
 
 viewTask : Task -> Html.Html Msg

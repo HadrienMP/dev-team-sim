@@ -30,11 +30,12 @@ main {
 }
 
 #statistics {
-  div {
-    display: flex;
-    gap: 0.6rem;
-    p:first-child:after {
-      content: " :";
+  .metric {
+    .label {
+      font-weight: bold;
+      &:after {
+        content: " : ";
+      }
     }
   }
 }
