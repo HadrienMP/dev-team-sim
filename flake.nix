@@ -15,7 +15,7 @@
             pkgs.nodejs-18_x
             pkgs.yarn
 
-            pkgs.gnumake
+            pkgs.just
           ];
 
           shellHook = ''
