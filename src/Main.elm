@@ -120,9 +120,10 @@ view model =
             , Html.section [ Html.Attributes.id "statistics" ]
                 [ Html.h2 [] [ Html.text "Statistics" ]
                 , viewMetric { label = "WIP", value = "1" }
-                , viewMetric { label = "Throughput", value = leadTime model |> String.fromFloat }
-                , viewMetric { label = "Lead Time", value = leadTime model |> String.fromFloat }
-                , viewMetric { label = "Cost", value = "50$ / point" }
+                , viewMetric { label = "Throughput", value = "4 points / j" }
+                , viewMetric { label = "Lead Time", value = (leadTime model |> String.fromFloat) ++ " j" }
+                , viewMetric { label = "Cost", value = "100$ / point" }
+                , viewMetric { label = "1 Point", value = "~= 2h" }
                 ]
             ]
         ]
@@ -171,7 +172,11 @@ leadTime model =
     model.done
         |> List.map .size
         |> mean
+        -- TODO: this level of pause is very extreme...
+        -- 1 of pause between two tasks
         |> (+) 1
+        -- 4 points are a day
+        |> divfBy 4
         |> roundAt { place = 2 }
 
 

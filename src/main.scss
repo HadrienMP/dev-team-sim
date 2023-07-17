@@ -2,9 +2,11 @@ body {
   font-family: sans-serif;
 }
 
-h2,
-p {
-  margin: 0;
+h2 {
+  margin-bottom: 1rem;
+  &:last-child {
+    margin: 0;
+  }
 }
 
 main {
