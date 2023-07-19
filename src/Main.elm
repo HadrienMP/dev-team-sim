@@ -55,7 +55,7 @@ init _ =
       , todo = []
       , done = []
       }
-    , taskGenerator |> Random.list 20 |> Random.generate GotTasks
+    , taskGenerator |> Random.list 3 |> Random.generate GotTasks
     )
 
 
@@ -120,14 +120,32 @@ view model =
             , Html.section [ Html.Attributes.id "statistics" ]
                 [ Html.h2 [] [ Html.text "Statistics" ]
                 , viewMetric { label = "WIP", value = "1" }
-                , viewMetric { label = "Throughput", value = "4 points / j" }
-                , viewMetric { label = "Lead Time", value = (leadTime model |> String.fromFloat) ++ " j" }
+                , viewMetric { label = "Throughput", value = "4 pt / j" }
+                , viewMetric { label = "Lead Time", value = "0.25 j/pt" }
                 , viewMetric { label = "Cost", value = "100$ / point" }
                 , viewMetric { label = "1 Point", value = "~= 2h" }
                 ]
             ]
         ]
     }
+
+
+mean : List Int -> Float
+mean list =
+    list
+        |> List.sum
+        |> toFloat
+        |> divfBy (List.length list |> toFloat)
+
+
+roundAt : { place : Int } -> Float -> Float
+roundAt { place } a =
+    a * (10 ^ place |> toFloat) |> round |> toFloat |> divfBy (10 ^ place |> toFloat)
+
+
+divfBy : Float -> Float -> Float
+divfBy b a =
+    a / b
 
 
 viewMetric : { label : String, value : String } -> Html.Html Msg
@@ -165,34 +183,3 @@ viewCharacter model =
             Nothing ->
                 Html.text ""
         ]
-
-
-leadTime : Model -> Float
-leadTime model =
-    model.done
-        |> List.map .size
-        |> mean
-        -- TODO: this level of pause is very extreme...
-        -- 1 of pause between two tasks
-        |> (+) 1
-        -- 4 points are a day
-        |> divfBy 4
-        |> roundAt { place = 2 }
-
-
-mean : List Int -> Float
-mean list =
-    list
-        |> List.sum
-        |> toFloat
-        |> divfBy (List.length list |> toFloat)
-
-
-roundAt : { place : Int } -> Float -> Float
-roundAt { place } a =
-    a * (10 ^ place |> toFloat) |> round |> toFloat |> divfBy (10 ^ place |> toFloat)
-
-
-divfBy : Float -> Float -> Float
-divfBy b a =
-    a / b
