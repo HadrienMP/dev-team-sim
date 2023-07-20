@@ -45,12 +45,12 @@ suite =
                 )
             ]
         , describe "Multiple tasks"
-            [ test "toto" <|
+            [ test "2 tasks that fit in one day" <|
                 \_ ->
                     [ { size = Hour 1 }, { size = Hour 1 } ]
                         |> throughput
                         |> Expect.equal (TasksPerDay 2)
-            , test "toto2" <|
+            , test "2 tasks that span a day with their break" <|
                 \_ ->
                     [ { size = Hour 3 }, { size = Hour 3 } ]
                         |> throughput
