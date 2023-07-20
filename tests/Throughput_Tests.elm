@@ -1,4 +1,4 @@
-module ThroughputTests exposing (..)
+module Throughput_Tests exposing (..)
 
 import DevTask exposing (Task)
 import Duration exposing (Duration(..))
@@ -24,13 +24,13 @@ suite =
                     \_ ->
                         throughput [ { size = Hour 3 } ]
                             |> Expect.equal (TasksPerDay 1)
-                , test "4" <|
+                , test "Don't take a break first thing in the morning" <|
                     \_ ->
                         throughput [ { size = Hour 4 } ]
-                            |> Expect.equal (TasksPerDay 0.8)
+                            |> Expect.equal (TasksPerDay 1)
                 ]
             , describe "is the mean points done in one day"
-                ([ { size = 8, expected = 0.44 }
+                ([ { size = 8, expected = 0.5 }
                  , { size = 7, expected = 0.5 }
                  , { size = 5, expected = 0.67 }
                  ]

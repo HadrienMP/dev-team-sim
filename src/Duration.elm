@@ -28,3 +28,8 @@ divideBy (Hour b) (Hour a) =
 toHours : Duration -> Float
 toHours (Hour value) =
     value
+
+
+isMultipleOf : Duration -> Duration -> Bool
+isMultipleOf multiple target =
+    (toHours target |> round) |> modBy (toHours multiple |> round) |> (==) 0

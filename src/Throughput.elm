@@ -1,13 +1,9 @@
 module Throughput exposing (..)
 
 import DevTask exposing (Task)
-import Duration
+import Duration exposing (Duration(..))
 import Extra exposing (roundAt)
 import Settings exposing (Settings)
-
-
-
--- TODO: this assumes that you take a break first thing in the morning if your task spanned the whole day
 
 
 type Throughput
@@ -22,11 +18,28 @@ fromList tasks settings =
 
         taskDuration =
             tasks
-                |> List.map .size
-                |> List.foldl Duration.add (Duration.multiply nbTasks settings.breakDuration)
+                |> List.foldl (addTaskDuration settings) (Hour 0)
     in
     settings.dayLength
         |> Duration.divideBy taskDuration
         |> (*) nbTasks
         |> roundAt 2
         |> TasksPerDay
+
+
+addTaskDuration : Settings -> Task -> Duration -> Duration
+addTaskDuration settings task elapsedBefore =
+    let
+        elapsedAfter =
+            task.size |> Duration.add elapsedBefore
+    in
+    elapsedAfter |> Duration.add (breakDuration elapsedAfter settings)
+
+
+breakDuration : Duration -> Settings -> Duration
+breakDuration elapsedAfter settings =
+    if elapsedAfter |> Duration.isMultipleOf settings.dayLength then
+        Hour 0
+
+    else
+        settings.breakDuration
