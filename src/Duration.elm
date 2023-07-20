@@ -37,4 +37,25 @@ isMultipleOf multiple target =
 
 print : Duration -> String
 print (Hour value) =
-    String.fromFloat value ++ "h"
+    let
+        days =
+            value / 8 |> floor
+
+        daysStr =
+            if days == 0 then
+                ""
+
+            else
+                String.fromInt days ++ "d"
+
+        hours =
+            round value |> modBy 8
+
+        hoursStr =
+            if hours == 0 then
+                ""
+
+            else
+                String.fromInt hours ++ "h"
+    in
+    daysStr ++ " " ++ hoursStr |> String.trim

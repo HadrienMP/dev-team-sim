@@ -29,7 +29,7 @@ main =
 
 settings : Settings
 settings =
-    { dayLength = Hour 4, breakDuration = Hour 1 }
+    { dayLength = Hour 8, breakDuration = Hour 1 }
 
 
 type alias Flags =
@@ -55,7 +55,7 @@ init _ =
       , todo = []
       , done = []
       }
-    , DevTask.random |> Random.list 3 |> Random.generate GotTasks
+    , DevTask.random |> Random.list 20 |> Random.generate GotTasks
     )
 
 
