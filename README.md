@@ -8,7 +8,7 @@
 
 This project uses [Nix](https://nixos.org/) and [direnv](https://direnv.net/) for its tools. Install them to code on your machine.
 
-### 👎 Without nix
+### ✋ Without nix
 
 Install:
 
