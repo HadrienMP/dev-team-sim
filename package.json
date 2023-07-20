@@ -1,7 +1,7 @@
 {
   "name": "dev-team-sim",
   "version": "1.0.0",
-  "source": "src/index.html",
+  "source": "index.html",
   "license": "MIT",
   "scripts": {
     "postinstall": "elm-tooling install",
