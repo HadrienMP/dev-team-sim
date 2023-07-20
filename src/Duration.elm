@@ -5,6 +5,11 @@ type Duration
     = Hour Float
 
 
+zero : Duration
+zero =
+    Hour 0
+
+
 add : Duration -> Duration -> Duration
 add (Hour a) (Hour b) =
     Hour (a + b)
@@ -23,6 +28,11 @@ subtractBy (Hour b) (Hour a) =
 divideBy : Duration -> Duration -> Float
 divideBy (Hour b) (Hour a) =
     a / b
+
+
+divideByInt : Int -> Duration -> Duration
+divideByInt divider (Hour a) =
+    a / toFloat divider |> Hour
 
 
 toHours : Duration -> Float

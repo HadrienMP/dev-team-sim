@@ -48,3 +48,8 @@ breakDuration elapsedAfter settings =
 
     else
         settings.breakDuration
+
+
+leadTime : { wip : Int, settings : Settings } -> Throughput -> Duration
+leadTime { wip, settings } (TasksPerDay t) =
+    settings.dayLength |> Duration.multiply (toFloat wip / t |> roundAt 2)

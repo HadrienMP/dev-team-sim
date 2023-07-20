@@ -117,16 +117,34 @@ view model =
             [ Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Todo" ] :: (model.todo |> List.map viewTask))
             , viewCharacter model
             , Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Done" ] :: (model.done |> List.map viewTask))
-            , Html.section [ Html.Attributes.id "statistics" ]
-                [ Html.h2 [] [ Html.text "Statistics" ]
-                , viewMetric { label = "WIP", value = "1" }
-                , viewMetric { label = "Throughput", value = Throughput.fromList model.done settings |> Throughput.print }
-                , viewMetric { label = "Lead Time", value = "0.25 d/task" }
-                , viewMetric { label = "Cost", value = "75 $/h" }
-                ]
+            , viewStatistics model
             ]
         ]
     }
+
+
+viewStatistics : Model -> Html.Html Msg
+viewStatistics model =
+    let
+        throughput =
+            Throughput.fromList model.done settings
+    in
+    Html.section [ Html.Attributes.id "statistics" ]
+        [ Html.h2 [] [ Html.text "Statistics" ]
+        , viewMetric { label = "WIP", value = "1" }
+        , viewMetric { label = "Throughput", value = throughput |> Throughput.print }
+        , viewMetric { label = "Lead Time", value = throughput |> Throughput.leadTime { wip = 1, settings = settings } |> Duration.print }
+        , viewMetric
+            { label = "Mean task duration"
+            , value =
+                model.done
+                    |> List.map .size
+                    |> List.foldl Duration.add Duration.zero
+                    |> Duration.divideByInt (List.length model.done)
+                    |> Duration.print
+            }
+        , viewMetric { label = "Cost", value = "75 $/h" }
+        ]
 
 
 viewMetric : { label : String, value : String } -> Html.Html Msg
