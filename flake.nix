@@ -19,7 +19,7 @@
           ];
 
           shellHook = ''
-            yarn install
+            just install
           '';
         };
       });
