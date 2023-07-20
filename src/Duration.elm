@@ -33,3 +33,8 @@ toHours (Hour value) =
 isMultipleOf : Duration -> Duration -> Bool
 isMultipleOf multiple target =
     (toHours target |> round) |> modBy (toHours multiple |> round) |> (==) 0
+
+
+print : Duration -> String
+print (Hour value) =
+    String.fromFloat value ++ "h"

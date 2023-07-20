@@ -10,6 +10,11 @@ type Throughput
     = TasksPerDay Float
 
 
+print : Throughput -> String
+print (TasksPerDay value) =
+    String.fromFloat value ++ "\u{00A0}tasks/d"
+
+
 fromList : List Task -> Settings -> Throughput
 fromList tasks settings =
     let

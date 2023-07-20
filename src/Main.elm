@@ -1,12 +1,15 @@
 module Main exposing (..)
 
 import Browser
+import DevTask exposing (Task)
 import Dict exposing (update)
+import Duration exposing (Duration(..))
 import Html exposing (label)
 import Html.Attributes
-import Platform exposing (Task)
 import Platform.Cmd as Cmd
-import Random exposing (Generator)
+import Random
+import Settings exposing (Settings)
+import Throughput
 import Time
 
 
@@ -24,26 +27,23 @@ main =
 -- init
 
 
+settings : Settings
+settings =
+    { dayLength = Hour 4, breakDuration = Hour 1 }
+
+
 type alias Flags =
     ()
 
 
-type alias Task =
+type alias TaskProgress =
     { size : Int
     , done : Int
     }
 
 
-taskGenerator : Generator Task
-taskGenerator =
-    Random.uniform 2 [ 3, 5, 8, 13, 21 ]
-        |> Random.andThen (\a -> Random.float 0.8 1.2 |> Random.map (\b -> toFloat a * b))
-        |> Random.map round
-        |> Random.map (\size -> { size = size, done = 0 })
-
-
 type alias Model =
-    { current : Maybe Task
+    { current : Maybe TaskProgress
     , todo : List Task
     , done : List Task
     }
@@ -55,7 +55,7 @@ init _ =
       , todo = []
       , done = []
       }
-    , taskGenerator |> Random.list 3 |> Random.generate GotTasks
+    , DevTask.random |> Random.list 3 |> Random.generate GotTasks
     )
 
 
@@ -82,7 +82,7 @@ update msg model =
                             { task | done = task.done + 1 }
                     in
                     if nextTask.done == nextTask.size then
-                        ( { model | current = Nothing, done = nextTask :: model.done }, Cmd.none )
+                        ( { model | current = Nothing, done = { size = Hour <| toFloat nextTask.size } :: model.done }, Cmd.none )
 
                     else
                         ( { model | current = Just nextTask }, Cmd.none )
@@ -90,7 +90,7 @@ update msg model =
                 Nothing ->
                     case model.todo of
                         first :: rest ->
-                            ( { model | todo = rest, current = Just first }, Cmd.none )
+                            ( { model | todo = rest, current = Just { size = Duration.toHours first.size |> round, done = 0 } }, Cmd.none )
 
                         [] ->
                             ( model, Cmd.none )
@@ -120,32 +120,13 @@ view model =
             , Html.section [ Html.Attributes.id "statistics" ]
                 [ Html.h2 [] [ Html.text "Statistics" ]
                 , viewMetric { label = "WIP", value = "1" }
-                , viewMetric { label = "Throughput", value = "4 pt / j" }
-                , viewMetric { label = "Lead Time", value = "0.25 j/pt" }
-                , viewMetric { label = "Cost", value = "100$ / point" }
-                , viewMetric { label = "1 Point", value = "~= 2h" }
+                , viewMetric { label = "Throughput", value = Throughput.fromList model.done settings |> Throughput.print }
+                , viewMetric { label = "Lead Time", value = "0.25 d/task" }
+                , viewMetric { label = "Cost", value = "75 $/h" }
                 ]
             ]
         ]
     }
-
-
-mean : List Int -> Float
-mean list =
-    list
-        |> List.sum
-        |> toFloat
-        |> divfBy (List.length list |> toFloat)
-
-
-roundAt : { place : Int } -> Float -> Float
-roundAt { place } a =
-    a * (10 ^ place |> toFloat) |> round |> toFloat |> divfBy (10 ^ place |> toFloat)
-
-
-divfBy : Float -> Float -> Float
-divfBy b a =
-    a / b
 
 
 viewMetric : { label : String, value : String } -> Html.Html Msg
@@ -158,7 +139,7 @@ viewMetric { label, value } =
 
 viewTask : Task -> Html.Html Msg
 viewTask task =
-    Html.div [ Html.Attributes.class "task" ] [ Html.text <| String.fromInt task.size ]
+    Html.div [ Html.Attributes.class "task" ] [ Html.text <| Duration.print task.size ]
 
 
 viewCharacter : Model -> Html.Html Msg
