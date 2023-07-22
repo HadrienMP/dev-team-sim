@@ -1,9 +1,9 @@
-module Throughput exposing (..)
+module Core.Throughput exposing (..)
 
-import DevTask exposing (Task)
-import Duration exposing (Duration(..))
+import Core.DevTask exposing (Task)
+import Core.Settings exposing (Settings)
 import Extra exposing (roundAt)
-import Settings exposing (Settings)
+import Lib.Duration as Duration exposing (Duration(..))
 
 
 type Throughput

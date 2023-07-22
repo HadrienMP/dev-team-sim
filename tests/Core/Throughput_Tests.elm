@@ -1,11 +1,11 @@
-module Throughput_Tests exposing (..)
+module Core.Throughput_Tests exposing (..)
 
-import DevTask exposing (Task)
-import Duration exposing (Duration(..))
+import Core.DevTask exposing (Task)
+import Core.Settings exposing (Settings)
+import Core.Throughput as Throughput exposing (Throughput(..))
 import Expect
-import Settings exposing (Settings)
+import Lib.Duration exposing (Duration(..))
 import Test exposing (Test, describe, test)
-import Throughput exposing (Throughput(..))
 
 
 settings : Settings

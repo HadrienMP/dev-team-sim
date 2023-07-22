@@ -1,15 +1,15 @@
 module Main exposing (..)
 
 import Browser
-import DevTask exposing (Task)
+import Core.DevTask as DevTask exposing (Task)
+import Core.Settings exposing (Settings)
+import Core.Throughput as Throughput
 import Dict exposing (update)
-import Duration exposing (Duration(..))
 import Html exposing (label)
 import Html.Attributes
+import Lib.Duration as Duration exposing (Duration(..))
 import Platform.Cmd as Cmd
 import Random
-import Settings exposing (Settings)
-import Throughput
 import Time
 
 

@@ -1,6 +1,6 @@
-module Settings exposing (..)
+module Core.Settings exposing (..)
 
-import Duration exposing (Duration)
+import Lib.Duration exposing (Duration)
 
 
 type alias Settings =

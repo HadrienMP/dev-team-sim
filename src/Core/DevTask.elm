@@ -1,6 +1,6 @@
-module DevTask exposing (..)
+module Core.DevTask exposing (..)
 
-import Duration exposing (Duration(..))
+import Lib.Duration exposing (Duration(..))
 import Random exposing (Generator)
 
 
