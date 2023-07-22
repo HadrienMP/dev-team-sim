@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Core.DevTask as DevTask exposing (Task)
-import Core.Settings exposing (Settings)
+import Core.Settings as Settings
 import Core.Throughput as Throughput
 import Dict exposing (update)
 import Html exposing (label)
@@ -25,11 +25,6 @@ main =
 
 
 -- init
-
-
-settings : Settings
-settings =
-    { dayLength = Hour 8, breakDuration = Hour 1 }
 
 
 type alias Flags =
@@ -127,13 +122,13 @@ viewStatistics : Model -> Html.Html Msg
 viewStatistics model =
     let
         throughput =
-            Throughput.fromList model.done settings
+            Throughput.fromList model.done Settings.default
     in
     Html.section [ Html.Attributes.id "statistics" ]
         [ Html.h2 [] [ Html.text "Statistics" ]
         , viewMetric { label = "WIP", value = "1" }
         , viewMetric { label = "Throughput", value = throughput |> Throughput.print }
-        , viewMetric { label = "Lead Time", value = throughput |> Throughput.leadTime { wip = 1, settings = settings } |> Duration.print }
+        , viewMetric { label = "Lead Time", value = throughput |> Throughput.leadTime { wip = 1, settings = Settings.default } |> Duration.print }
         , viewMetric
             { label = "Mean task duration"
             , value =
