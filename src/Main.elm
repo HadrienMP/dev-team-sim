@@ -109,9 +109,11 @@ view model =
     { title = "Dev Team Sim"
     , body =
         [ Html.main_ []
-            [ Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Todo" ] :: (model.todo |> List.map viewTask))
-            , viewCharacter model
-            , Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Done" ] :: (model.done |> List.map viewTask))
+            [ Html.section [ Html.Attributes.id "sim" ]
+                [ Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Todo" ] :: (model.todo |> List.map viewTask))
+                , viewCharacter model
+                , Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Done" ] :: (model.done |> List.map viewTask))
+                ]
             , viewStatistics model
             ]
         ]

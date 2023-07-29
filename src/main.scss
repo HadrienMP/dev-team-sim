@@ -1,20 +1,46 @@
+@font-face {
+  font-family: "Old School Adventures";
+  src: url("../static/School Adventures.woff") format("woff"),
+    url("../static/OldSchoolAdventures.ttf") format("truetype");
+}
+
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+main {
+  display: flex;
+  gap: 40px;
 }
 
 h2 {
   margin-bottom: 1rem;
+  font-family: "Old School Adventures";
+
   &:last-child {
     margin: 0;
   }
 }
 
-main {
-  width: fit-content;
-  position: absolute;
-  left: 50%;
-  bottom: 200px;
-  transform: translateX(-50%);
+#sim {
   display: flex;
   gap: 40px;
   align-items: flex-end;
@@ -32,6 +58,8 @@ main {
 }
 
 #statistics {
+  border-left: 1px solid;
+  padding-left: 40px;
   .metric {
     .label {
       font-weight: bold;
