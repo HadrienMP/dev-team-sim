@@ -66,9 +66,9 @@ init _ =
 
 type Msg
     = GotTasks (List Task)
-    | Tick Time.Posix
     | GotCharacter Character.Character
     | StartNextTask Character.Id
+    | AdvanceTask Character.Id
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -101,13 +101,16 @@ update msg model =
                                         }
                                     )
                       }
-                    , Cmd.none
+                    , Hour 1
+                        |> toSimTime
+                        |> Process.sleep
+                        |> Task.perform (always (AdvanceTask characterId))
                     )
 
                 [] ->
                     ( model, Cmd.none )
 
-        Tick _ ->
+        AdvanceTask _ ->
             model.character
                 |> Maybe.map List.singleton
                 |> Maybe.withDefault []
@@ -171,7 +174,13 @@ advanceCharacter character =
                 )
 
             else
-                ( { character | task = Just nextTask }, Nothing, Cmd.none )
+                ( { character | task = Just nextTask }
+                , Nothing
+                , Hour 1
+                    |> toSimTime
+                    |> Process.sleep
+                    |> Task.perform (always (AdvanceTask character.id))
+                )
 
 
 toSimTime : Duration -> Float
@@ -185,7 +194,7 @@ toSimTime duration =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Time.every 200 Tick
+    Sub.none
 
 
 
@@ -198,9 +207,15 @@ view model =
     , body =
         [ Html.main_ []
             [ Html.section [ Html.Attributes.id "sim" ]
-                [ Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Todo" ] :: (model.todo |> List.map viewTask))
-                , model.character |> Maybe.map Character.view |> Maybe.withDefault (Html.text "")
-                , Html.section [ Html.Attributes.class "task-list" ] (Html.h2 [] [ Html.text "Done" ] :: (model.done |> List.map viewTask))
+                [ Html.section
+                    [ Html.Attributes.class "task-list" ]
+                    (Html.h2 [] [ Html.text "Todo" ] :: (model.todo |> List.map viewTask))
+                , model.character
+                    |> Maybe.map Character.view
+                    |> Maybe.withDefault (Html.text "")
+                , Html.section
+                    [ Html.Attributes.class "task-list" ]
+                    (Html.h2 [] [ Html.text "Done" ] :: (model.done |> List.map viewTask))
                 ]
             , viewStatistics model
             ]
