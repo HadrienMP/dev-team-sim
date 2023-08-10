@@ -12,6 +12,7 @@ settings : Settings
 settings =
     { dayLength = Hour 4
     , breakDuration = Hour 1
+    , numberOfDevs = 1
     }
 
 
