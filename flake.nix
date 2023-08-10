@@ -16,6 +16,7 @@
             pkgs.yarn
 
             pkgs.just
+            pkgs.watchexec
           ];
 
           shellHook = ''

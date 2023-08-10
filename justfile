@@ -9,3 +9,6 @@ install:
 # Launch automated tests
 test *FLAGS:
   yarn test {{FLAGS}}
+
+tcr:
+  ./tcr.sh
