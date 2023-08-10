@@ -115,7 +115,14 @@ update msg model =
                 |> Maybe.map List.singleton
                 |> Maybe.withDefault []
                 |> advanceCharacters
-                |> (\( character, done, command ) -> ( { model | character = List.head character, done = done ++ model.done }, command ))
+                |> (\( character, done, command ) ->
+                        ( { model
+                            | character = List.head character
+                            , done = done ++ model.done
+                          }
+                        , command
+                        )
+                   )
 
 
 advanceCharacters : List Character -> ( List Character, List Task, Cmd Msg )

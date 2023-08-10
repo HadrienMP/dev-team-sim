@@ -1,6 +1,6 @@
 module Character exposing (..)
 
-import Html
+import Html exposing (h1)
 import Html.Attributes
 import Lib.Duration exposing (Duration(..))
 import Random
@@ -31,7 +31,10 @@ random =
         |> Random.map
             (\( id, imageIndex ) ->
                 { task = Nothing
-                , image = String.fromInt imageIndex |> String.padLeft 2 '0'
+                , image =
+                    "/public/img/characters/char_"
+                        ++ String.padLeft 2 '0' (String.fromInt imageIndex)
+                        ++ ".png"
                 , price = EurosPerHour 75
                 , id = id
                 }
@@ -53,13 +56,15 @@ view model =
     Html.section [ Html.Attributes.class "character" ]
         [ Html.img
             [ Html.Attributes.classList [ ( "working", model.task /= Nothing ) ]
-            , Html.Attributes.src "[VITE_PLUGIN_ELM_ASSET:/static/img/characters/char_26.png]"
+            , Html.Attributes.src model.image
             ]
             []
         , case model.task of
             Just task ->
                 Html.div [ Html.Attributes.class "work" ]
-                    [ Html.span [ Html.Attributes.class "task" ] [ Html.text <| "Size: " ++ String.fromInt task.size ]
+                    [ Html.span
+                        [ Html.Attributes.class "task" ]
+                        [ Html.text <| "Size: " ++ String.fromInt task.size ]
                     , Html.progress
                         [ Html.Attributes.value <| String.fromInt task.done
                         , Html.Attributes.max <| String.fromInt task.size
