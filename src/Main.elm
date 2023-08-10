@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Browser
+import Calendar exposing (Calendar)
 import Character exposing (Character)
 import Core.DevTask as DevTask exposing (Task)
 import Core.Settings as Settings
@@ -40,10 +41,18 @@ type alias TaskProgress =
     }
 
 
+type SimTime
+    = Slow
+    | Medium
+    | Fast
+
+
 type alias Model =
     { todo : List Task
     , done : List Task
+    , calendar : Calendar
     , character : Maybe Character.Character
+    , simTime : SimTime
     }
 
 
@@ -51,7 +60,9 @@ init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { todo = []
       , done = []
+      , calendar = Calendar.init
       , character = Nothing
+      , simTime = Slow
       }
     , Cmd.batch
         [ DevTask.random |> Random.list 20 |> Random.generate GotTasks
@@ -68,7 +79,7 @@ type Msg
     = GotTasks (List Task)
     | GotCharacter Character.Character
     | StartNextTask Character.Id
-    | AdvanceTask Character.Id
+    | Tick
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -101,33 +112,31 @@ update msg model =
                                         }
                                     )
                       }
-                    , Hour 1
-                        |> toSimTime
-                        |> Process.sleep
-                        |> Task.perform (always (AdvanceTask characterId))
+                    , Cmd.none
                     )
 
                 [] ->
                     ( model, Cmd.none )
 
-        AdvanceTask _ ->
+        Tick ->
             model.character
                 |> Maybe.map List.singleton
                 |> Maybe.withDefault []
-                |> advanceCharacters
+                |> advanceCharacters model
                 |> (\( character, done, command ) ->
                         ( { model
                             | character = List.head character
                             , done = done ++ model.done
+                            , calendar = Calendar.addHour model.calendar
                           }
                         , command
                         )
                    )
 
 
-advanceCharacters : List Character -> ( List Character, List Task, Cmd Msg )
-advanceCharacters characters =
-    advanceCharactersRec
+advanceCharacters : Model -> List Character -> ( List Character, List Task, Cmd Msg )
+advanceCharacters model characters =
+    advanceCharactersRec model
         { toAdvance = characters
         , advanced = []
         , done = []
@@ -136,13 +145,15 @@ advanceCharacters characters =
 
 
 advanceCharactersRec :
-    { toAdvance : List Character
-    , advanced : List Character
-    , done : List Task
-    , cmd : Cmd Msg
-    }
+    Model
+    ->
+        { toAdvance : List Character
+        , advanced : List Character
+        , done : List Task
+        , cmd : Cmd Msg
+        }
     -> ( List Character, List Task, Cmd Msg )
-advanceCharactersRec { toAdvance, advanced, done, cmd } =
+advanceCharactersRec model { toAdvance, advanced, done, cmd } =
     case toAdvance of
         [] ->
             ( advanced, done, cmd )
@@ -150,9 +161,9 @@ advanceCharactersRec { toAdvance, advanced, done, cmd } =
         character :: others ->
             let
                 ( next, newDone, nextCmd ) =
-                    advanceCharacter character
+                    advanceCharacter model character
             in
-            advanceCharactersRec
+            advanceCharactersRec model
                 { toAdvance = others
                 , advanced = next :: advanced
                 , done = newDone |> Maybe.map (\a -> a :: done) |> Maybe.withDefault done
@@ -160,8 +171,8 @@ advanceCharactersRec { toAdvance, advanced, done, cmd } =
                 }
 
 
-advanceCharacter : Character -> ( Character, Maybe Task, Cmd Msg )
-advanceCharacter character =
+advanceCharacter : Model -> Character -> ( Character, Maybe Task, Cmd Msg )
+advanceCharacter model character =
     case character.task of
         Nothing ->
             ( character, Nothing, Cmd.none )
@@ -175,7 +186,7 @@ advanceCharacter character =
                 ( { character | task = Nothing }
                 , Just { size = Hour <| toFloat task.size }
                 , Settings.default.breakDuration
-                    |> toSimTime
+                    |> toSimTime model.simTime
                     |> Process.sleep
                     |> Task.perform (always (StartNextTask character.id))
                 )
@@ -183,16 +194,23 @@ advanceCharacter character =
             else
                 ( { character | task = Just nextTask }
                 , Nothing
-                , Hour 1
-                    |> toSimTime
-                    |> Process.sleep
-                    |> Task.perform (always (AdvanceTask character.id))
+                , Cmd.none
                 )
 
 
-toSimTime : Duration -> Float
-toSimTime duration =
-    Duration.toHours duration * 100
+toSimTime : SimTime -> Duration -> Float
+toSimTime simTime duration =
+    Duration.toHours duration
+        * (case simTime of
+            Slow ->
+                500
+
+            Medium ->
+                300
+
+            Fast ->
+                100
+          )
 
 
 
@@ -200,8 +218,8 @@ toSimTime duration =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
+subscriptions model =
+    Time.every (Hour 1 |> toSimTime model.simTime) (always Tick)
 
 
 
@@ -238,6 +256,7 @@ viewStatistics model =
     in
     Html.section [ Html.Attributes.id "statistics" ]
         [ Html.h2 [] [ Html.text "Statistics" ]
+        , Html.text <| Calendar.print model.calendar
         , viewMetric { label = "WIP", value = "1" }
         , viewMetric { label = "Throughput", value = throughput |> Throughput.print }
         , viewMetric { label = "Lead Time", value = throughput |> Throughput.leadTime { wip = 1, settings = Settings.default } |> Duration.print }

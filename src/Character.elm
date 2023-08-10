@@ -1,6 +1,6 @@
 module Character exposing (..)
 
-import Html exposing (h1)
+import Html
 import Html.Attributes
 import Lib.Duration exposing (Duration(..))
 import Random
@@ -32,7 +32,7 @@ random =
             (\( id, imageIndex ) ->
                 { task = Nothing
                 , image =
-                    "/public/img/characters/char_"
+                    "/img/characters/char_"
                         ++ String.padLeft 2 '0' (String.fromInt imageIndex)
                         ++ ".png"
                 , price = EurosPerHour 75
